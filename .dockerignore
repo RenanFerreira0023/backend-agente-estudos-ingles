@@ -1,0 +1,16 @@
+# Folders
+venv/
+__pycache__/
+.git/
+models/
+style/
+
+# Files
+.gitignore
+*.gguf
+*.bin
+.vscode/
+Dockerfile
+.dockerignore
+LICENSE
+README.md
