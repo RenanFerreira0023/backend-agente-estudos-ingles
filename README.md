@@ -1,6 +1,9 @@
 # ✦ Backend - Agente de Estudos de Inglês
 
-Este projeto é o back-end para um agente inteligente de estudos de inglês. Ele fornece uma API robusta utilizando **DeepSeek-R1** (via GPT4All) para processamento de linguagem natural e **Whisper** para transcrição de áudio e vídeo, permitindo uma experiência completa de aprendizado.
+Este projeto é o back-end para um agente inteligente de estudos de inglês. Ele fornece uma API robusta utilizando **DeepSeek-R1** (via GPT4All) para processamento de linguagem natural e **Whisper** para transcrição de áudio e vídeo.
+
+> [!NOTE]
+> Este repositório é parte integrante do sistema de estudos de inglês. Para a interface do usuário, consulte o repositório do **[Frontend - Agente de Estudos de Inglês](https://github.com/RenanFerreira0023/frontend-agente-estudos-ingles)**.
 
 ---
 
@@ -92,10 +95,10 @@ O projeto permite alternar entre CPU e GPU através do arquivo `config.py`:
 
 ---
 
-## 🤝 Créditos
+## 🤝 Créditos e Projetos Relacionados
 
-Este projeto foi inspirado e utiliza conceitos do repositório:
-👉 **[chatGenerativo](https://github.com/RenanFerreira0023/chatGenerativo)**
+- **Frontend Oficial**: [frontend-agente-estudos-ingles](https://github.com/RenanFerreira0023/frontend-agente-estudos-ingles)
+- **Inspiração**: [chatGenerativo](https://github.com/RenanFerreira0023/chatGenerativo)
 
 Desenvolvido por [Renan Ferreira](https://github.com/RenanFerreira0023).
 
