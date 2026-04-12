@@ -4,10 +4,17 @@ import os
 
 class Settings(BaseSettings):
     # App Config
-    APP_NAME: str = "DeepSeek-R1 API"
+    APP_NAME: str = "DeepSeek-R1 API - Agente de Estudos"
     DEBUG: bool = False
     HOST: str = "0.0.0.0"
     PORT: int = 8000
+
+    # Banco de Dados Config
+    DB_HOST: str = "localhost"
+    DB_PORT: str = "5432"
+    DB_USER: str = "postgres"
+    DB_PASSWORD: str = "1234"
+    DB_NAME: str = "super-aluno-ingles"
 
 # Agora incluído na classe Settings:
     USE_GPU: bool = True
