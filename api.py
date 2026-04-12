@@ -214,12 +214,24 @@ Você tem acesso a algumas ferramentas. Se precisar utilizar uma (por exemplo, p
                     tool_data = ""
                     has_tool = False
                     
+                    class ToolCallStopper:
+                        def __init__(self):
+                            self.buffer = ""
+                        def __call__(self, token_id, response):
+                            self.buffer += response
+                            if "</tool_call>" in self.buffer:
+                                return False
+                            return True
+                    
+                    stopper = ToolCallStopper()
+
                     with model.chat_session():
                         for token in model.generate(
                             formatted_prompt,
                             max_tokens=settings.MAX_TOKENS, 
                             temp=settings.TEMPERATURE, 
-                            streaming=True
+                            streaming=True,
+                            callback=stopper
                         ):
                             full_response += token
                             buffer += token
@@ -253,8 +265,14 @@ Você tem acesso a algumas ferramentas. Se precisar utilizar uma (por exemplo, p
                                 # Não mostramos isso para o usuário
                                 if "</tool_call>" in buffer:
                                     parts = buffer.split("</tool_call>")
-                                    tool_data += parts[0]
-                                    break
+                                    if parts[0] not in tool_data: # Segurança para não duplicar se receber pedaços
+                                        tool_data = parts[0] # Pega exatamente o recheio do json
+                                    # Em vez de break forçado (que causa erro na memória C++ da placa de vídeo),
+                                    # O stopper cuidará de desligar suavemente o motor e esvaziar a fila.
+                                    pass
+                                else:
+                                    tool_data = buffer
+
                                     
                         if not in_tool and buffer:
                             yield buffer
