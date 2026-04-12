@@ -20,6 +20,7 @@ from tools import TOOLS_REGISTRY, TOOLS_DESCRIPTION
 import json
 import uuid
 from tasks import start_scheduler
+from prompts import get_system_prompt
 
 # ─── Configuração de Logging ────────────────────────────────────────────────
 logging.basicConfig(
@@ -175,16 +176,7 @@ async def chat(request: ChatRequest):
                 history.reverse() # Colocar de volta na ordem cronológica de leitura
 
                 # 4. Formatar o Prompt com Injeção de Histórico e Ferramentas
-                system_prompt = f"""Você é um professor de inglês proativo. Ensine de forma didática e em português do Brasil, cuidando para dar respostas contextuais.
-
-=== FERRAMENTAS DISPONÍVEIS ===
-Você tem acesso a algumas ferramentas. Se precisar utilizar uma (por exemplo, para pesquisar uma palavra ou salvar um flashcard), envie EXATAMENTE o bloco abaixo e PARE de escrever:
-<tool_call>
-{{"name": "dictionary_lookup", "parameters": {{"word": "apple"}}}}
-</tool_call>
-
-{TOOLS_DESCRIPTION}
-==============================="""
+                system_prompt = get_system_prompt()
                 
                 formatted_prompt = f"System: {system_prompt}\n\n"
                 

@@ -1,77 +1,68 @@
-# 🎓 Backend - Agente de Estudos de Inglês
+# 🎓 Backend - Agente de Estudos de Inglês ("Super Aluno")
 
-A API que atua como o "cérebro" de um agente inteligente para ensino de inglês. Desenvolvido com **FastAPI**, ele utiliza o modelo **DeepSeek-R1** rodando localmente para atuar como professor de inglês, incluindo memória persistente e uso autônomo de ferramentas (agente ReAct). Além disso, transcreve vídeos e áudios com o **OpenAI Whisper**.
+Este é o backend de um agente inteligente desenhado para atuar como um **"Super Aluno"** no estudo de inglês. 
+Ele analisa transcrições de aulas particulares, identifica palavras que o professor pediu para anotar, resume vocabulários e dá dicas de pronúncia — interagindo sempre em **Português do Brasil (PT-BR)**.
 
----
-
-## 🚀 Funcionalidades Principais
-
-- **Professor Autônomo com IA (ReAct):** A IA decide sozinha quando usar ferramentas, como buscar palavras no dicionário ou salvar *flashcards*, tornando a aula mais dinâmica.
-- **Persistência e Histórico:** O agente guarda o histórico das aulas (usando o PostgreSQL), permitindo conversas prolongadas sem perder o contexto.
-- **Transcrição Multimídia (Whisper):** Endpoint nativo para converter trechos de vídeo ou áudio enviados em texto legível para estudos.
-- **Processamento de Arquivos:** Permite aos alunos enviar materiais e textos próprios (via Base64) junto de suas dúvidas.
-- **Alta Performance:** Sistema automatizado com suporte a hardware acelerado por placa de vídeo (**GPU**) oferecendo respostas em *streaming*, e com possibilidade de troca para uso de CPU (fallback).
+Construído com **FastAPI**, o sistema roda o modelo de inteligência artificial **DeepSeek-R1** e transcreve as vídeoaulas localmente usando o **OpenAI Whisper**. O agente possui histórico persistente (PostgreSQL) e consegue utilizar ferramentas (dicionário e flashcards) de forma autônoma.
 
 ---
 
-## ⚙️ Instalação e Configuração
+## ⚠️ Requisitos Fundamentais (Hardware e Software)
 
-### 1. Download e Ambiente
+Para que o projeto funcione usando aceleração de vídeo (GPU) sem problemas, você DEVE possuir:
+- **[Python 3.12](https://www.python.org/downloads/release/python-3128/)**
+- **[CUDA Toolkit 12](https://developer.nvidia.com/cuda-downloads)**
+- Placa de Vídeo NVIDIA Compatível (ex: linha RTX 40xx). *(Pode ser rodado no processador definindo `USE_GPU=False`, porém será mais lento).*
+- Banco de dados **[PostgreSQL](https://www.postgresql.org/download/)**.
+
+> [!IMPORTANT]
+> **Por que não usar a última versão?**
+> - **Python 3.12:** Versões mais recentes (como a 3.13) podem ainda não possuir bibliotecas pré-compiladas (wheels) para dependências críticas como o PyTorch e Whisper em todos os ambientes, o que pode causar falhas na instalação.
+> - **CUDA 12:** O motor de inferência local e as bibliotecas de transcrição foram validados especificamente para esta versão do Toolkit. Usar versões anteriores ou muito experimentais pode resultar em erros de carregamento de DLLs (`LoadLibraryExW`).
+
+---
+
+## ⚙️ Instalação e Execução Limpa
+
+1. Clone e configure o ambiente (Lembrando: Python 3.12+):
 ```bash
 git clone https://github.com/RenanFerreira0023/backend-agente-estudos-ingles.git
 cd backend-agente-estudos-ingles
-
-# Crie e ative o ambiente virtual
 python -m venv venv
-
-# No Windows
 venv\Scripts\activate
-# No Linux/Mac: source venv/bin/activate
-
-# Instale os pacotes
 pip install -r requirements.txt
 ```
 
-### 2. Configurando as Variáveis (`.env`)
-O projeto exige que você crie um arquivo chamado `.env` na raiz do repositório para realizar sua configuração com facilidade.
-Copie o bloco abaixo para dentro do seu `.env` e altere os dados do banco de dados PostgreSQL conforme as suas credenciais de máquina:
-
+2. Configure seu arquivo de variáveis de ambiente (`.env`) na raiz:
 ```env
 # Banco de Dados
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=sua-senha      # <- ALOQUE SUA SENHA AQUI
-DB_NAME=super-aluno-ingles # <- Certifique-se de que este banco já exista criado no PostgreSQL
+DB_PASSWORD=sua-senha      # <- Altere aqui
+DB_NAME=super-aluno-ingles # <- O banco já deve existir
 
-# Hardware
-USE_GPU=True               # Se você NÃO tiver placa de vídeo dedicada, deixe False
-
-# Modelos
+# Configurações do Motor de IA
+USE_GPU=True
 MODEL_NAME=DeepSeek-R1-Distill-Llama-8B-Q4_0.gguf
-CONTEXT_SIZE=8192
+CONTEXT_SIZE=16384         # Contexto expandido para digerir aulas densas
 ```
 
-### 3. Executando a API
-Certifique-se de que o **PostgreSQL** está online com o DB criado. Então rode o servidor localmente:
+3. Inicie o Servidor:
 ```bash
 python api.py
 ```
-A API ficará disponível no seu local em: `http://localhost:8000`.
+A API rodará localmente respondendo na porta `8000`.
 
 ---
 
-## 🛣️ Integração da API (Principais Rotas)
+## 🛠️ Resumo Técnico das Features Adicionadas
 
-- **`POST /chat`**: Envia mensagens para o professor, suportando upload de conteúdo anexo e gerando a resposta em forma de escrita sendo recebida em tempo real (*streaming*).
-- **`POST /uploadVideo`**: Envio de um arquivo de vídeo (base64) para extração de áudio e geração integral da transcrição para a interface.
-- **`GET /health`**: Verifica a saúde da conexão e se os modelos pesados da IA estão rodando ativamente na inteligência usando o dispositivo configurado (GPU/CPU).
+- **Ajustes de Persona Externalizados (`prompts.py`):** Todo o comportamento da IA como "Super Aluno" que fala PT-BR e captura anotações e pronúncias de aulas foi isolado em um módulo prático.
+- **Auto-Correção (Agent Loop ReAct):** O servidor percebe e contorna falhas na geração das requisições JSON da IA de forma transparente ao usuário (trabalhando limites de tentativas).
+- **Adequação Limite de Token:** O sistema adota limites agressivos de Tokens (16K ctx) garantindo que os vídeos passem no *input*.
+- **Rotas Principais:** Trabalhos por trás dos panos nos endpoints `/chat` (gerado em pedaços e validado) e fluxo rápido de áudio no `/uploadVideo` acelerado via CUDA 12.
 
 ---
-
-## 🤝 Repositórios Oficiais
-
-- **Frontend do Projeto (Interface visual)**: [frontend-agente-estudos-ingles](https://github.com/RenanFerreira0023/frontend-agente-estudos-ingles)
-- **Base Inicial de Estudos (Inspiração)**: [chatGenerativo](https://github.com/RenanFerreira0023/chatGenerativo)
-
-Desenvolvido por **[Renan Ferreira](https://github.com/RenanFerreira0023)**. 📄 Licença MIT.
+**Desenvolvido por [Renan Ferreira](https://github.com/RenanFerreira0023)**.  
+Acesse a Interface: [frontend-agente-estudos-ingles](https://github.com/RenanFerreira0023/frontend-agente-estudos-ingles)
