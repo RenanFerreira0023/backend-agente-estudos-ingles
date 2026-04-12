@@ -1,9 +1,17 @@
 # 🎓 Backend - Agente de Estudos de Inglês ("Super Aluno")
 
-Este é o backend de um agente inteligente desenhado para atuar como um **"Super Aluno"** no estudo de inglês. 
-Ele analisa transcrições de aulas particulares, identifica palavras que o professor pediu para anotar, resume vocabulários e dá dicas de pronúncia — interagindo sempre em **Português do Brasil (PT-BR)**.
+Este é um projeto de **LLM (Large Language Model)** que implementa um **Agente de IA especializado** no suporte ao aprendizado de inglês. Diferente de um chat comum, este agente foi "treinado" (via engenharia de prompt avançada e ferramentas externas) para atuar como um **"Super Aluno"**.
 
-Construído com **FastAPI**, o sistema roda o modelo de inteligência artificial **DeepSeek-R1** e transcreve as vídeoaulas localmente usando o **OpenAI Whisper**. O agente possui histórico persistente (PostgreSQL) e consegue utilizar ferramentas (dicionário e flashcards) de forma autônoma.
+### 🧠 O que o Agente faz?
+O coração do projeto é um agente inteligente que:
+- **Analisa Transcrições:** Processa diálogos de aulas particulares para extrair o que é mais importante.
+- **Identifica Anotações:** Detecta automaticamente quando um professor pede para o aluno anotar um vocabulário ou frase.
+- **Dicas de Pronúncia:** Fornece guias fonéticos e dicas para palavras difíceis identificadas na aula.
+- **Autonomia com Ferramentas:** Utiliza ferramentas como busca em dicionários e salvamento de flashcards de forma autônoma (ReAct pattern).
+- **Interação Natural:** Responde sempre em Português (PT-BR), mantendo uma didática de um colega de estudos dedicado.
+
+Construído com **FastAPI**, o sistema utiliza o modelo **DeepSeek-R1** e transcreve vídeoaulas localmente com o **OpenAI Whisper**.
+
 
 ---
 
@@ -53,6 +61,17 @@ CONTEXT_SIZE=16384         # Contexto expandido para digerir aulas densas
 python api.py
 ```
 A API rodará localmente respondendo na porta `8000`.
+
+> [!TIP]
+> **Acesso Externo / Como liberar no Windows Firewall:**
+> Se precisar que a API seja acessível por outros dispositivos, siga este passo a passo:
+> 1. Pressione a tecla `Win` e procure por **"Windows Defender Firewall com Segurança Avançada"**.
+> 2. No menu à esquerda, clique em **Regras de Entrada**.
+> 3. No menu à direita, clique em **Nova Regra...**.
+> 4. Escolha o tipo **Porta** e clique em Avançar.
+> 5. Selecione **TCP** e em Portas locais específicas, digite **8000**.
+> 6. Selecione **Permitir a conexão** e avance até o final.
+> 7. Dê um nome como `Backend Super Aluno (8000)` e finalize.
 
 ---
 
